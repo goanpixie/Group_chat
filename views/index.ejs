@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function (){
+            var person =prompt("Enter your name")
+            var socket = io.connect();
+            console.log(person);
+
+            if(person == null || person == ""){
+              person="Guest";
+            }
+            else{
+            socket.emit('new_person', {person:person});
+            socket.on('user_in_chatroom',function(data){
+                    $(".new_user").html(data.response + " is here now");
+                  });
+            socket.on('previous_messages',function(data){
+              console.log(data);
+            for(var i=0;i<data.response1.length;i++){
+              $('.message').append("<p>"+" "+ data.response1[i]+"</p>")
+              }
+            })
+          }
+
+
+
+            $('.btn').click(function (){
+            var input_messages = $('.input_message').val();
+            socket.emit('input_message', {name:person, message: input_messages})
+            });
+
+            socket.on('info',function(data){
+              console.log("We are here")
+              $('.message').append("<p>"+" "+ data.response+"</p>");
+            })
+
+
+
+            // socket.on('info',function(data,random){
+            //
+            //       console.log("We are here")
+            //     $(".statement").html("You emitted the following information to the server " +"{name:" +data.name
+            //     +",location: " +data.location+ ",language: " +data.language + ",comment: "+data.comment+"}" +"<br />" +"Your lucky number emitted by the server is:"+random);
+            //
+              });
+
+
+
+    </script>
+    <style>
+  .new_user{
+    border:1px solid black;
+    width:400px;
+    height:50px;
+    position:absolute;
+    top:20px;
+    right:400px;
+    padding:15px;
+    background-color: #00ccff;
+    }
+
+  .message{
+    border:1px solid black;
+    height:320px;
+    width:420px;
+    position:absolute;
+    top:60px;
+    right:400px;
+    background-color: #ffffcc;
+    padding:5px;
+    overflow: scroll;
+  }
+
+  .input_message{
+    border:1px solid black;
+    position:absolute;
+    top:350px;
+    right:500px;
+    width:220px;
+    height:20px;
+  }
+
+  .btn{
+    position:absolute;
+    top:355px;
+    right:450px;
+
+  }
+  </style>
+  </head>
+  <body>
+    <p class="new_user"></p>
+    <p class="message"></p>
+
+
+    <input class="input_message" type="text" placeholder="Type your message here"></p>
+    <button class="btn">sent</button>
+
+
+
+  </body>
+</html>
